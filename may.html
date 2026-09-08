@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Exames Médicos</title>
+    <!-- Vinculando o arquivo CSS externo -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Painel de Controle - Exames Médicos</h1>
+    </header>
+
+    <nav class="nao-imprimir">
+        <button class="active" onclick="mudarAba(event, 'relatorio')">Relatório Geral</button>
+        <button onclick="mudarAba(event, 'pedido')">Pedido de Exames (3 Vias)</button>
+        <button onclick="mudarAba(event, 'cadastro')">Cadastrar Resultados</button>
+    </nav>
+
+    <div class="container">
+
+        <!-- ABA 1: RELATÓRIO DE TODOS OS EXAMES -->
+        <div id="relatorio" class="tab-content active">
+            <h2>Relatório de Exames Realizados</h2>
+            <p>Lista consolidada de todos os exames cadastrados no sistema:</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Paciente</th>
+                        <th>Exame</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Resultado</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-relatorio">
+                    <tr>
+                        <td>Maria Oliveira</td>
+                        <td>Hemograma Completo</td>
+                        <td>06/06/2026</td>
+                        <td><span class="status-concluido">Concluído</span></td>
+                        <td>Normal</td>
+                    </tr>
+                    <tr>
+                        <td>João da Silva</td>
+                        <td>Glicemia em Jejum</td>
+                        <td>07/06/2026</td>
+                        <td><span class="status-pendente">Pendente</span></td>
+                        <td>Aguardando</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- ABA 2: PEDIDO DE EXAMES EM TRÊS VIAS -->
+        <div id="pedido" class="tab-content">
+            <h2>Emitir Pedido de Exames</h2>
+            <p class="nao-imprimir">Este pedido será gerado automaticamente em 3 vias para impressão.</p>
+            
+            <div class="form-group nao-imprimir">
+                <label>Nome do Paciente:</label>
+                <input type="text" id="ped-paciente" placeholder="Ex: Ana Souza" value="Ana Souza">
+            </div>
+            <div class="form-group nao-imprimir">
+                <label>Exames solicitados (separados por vírgula):</label>
+                <input type="text" id="ped-exames" placeholder="Ex: Raio-X, Colesterol" value="Hemograma, Colesterol Total, Triglicerídeos">
+            </div>
+            <button class="btn imprimir-btn" onclick="window.print()">Imprimir 3 Vias</button>
+
+            <div id="pedido-impressao">
+                <!-- Via 1 -->
+                <div class="pedido-container">
+                    <div class="via-titulo">VIA 1 - Laboratório / Prestador</div>
+                    <p><strong>Paciente:</strong> <span class="lbl-paciente">Ana Souza</span></p>
+                    <p><strong>Exames:</strong> <span class="lbl-exames">Hemograma, Colesterol Total, Triglicerídeos</span></p>
+                    <p><strong>Data:</strong> 08/06/2026 &nbsp;&nbsp;&nbsp;&nbsp; <strong>Assinatura Médico:</strong> _____________________</p>
+                </div>
+
+                <!-- Via 2 -->
+                <div class="pedido-container">
+                    <div class="via-titulo">VIA 2 - Paciente (Orientações)</div>
+                    <p><strong>Paciente:</strong> <span class="lbl-paciente">Ana Souza</span></p>
+                    <p><strong>Exames:</strong> <span class="lbl-exames">Hemograma, Colesterol Total, Triglicerídeos</span></p>
+                    <p><strong>Data:</strong> 08/06/2026 &nbsp;&nbsp;&nbsp;&nbsp; <strong>Assinatura Médico:</strong> _____________________</p>
+                </div>
+
+                <!-- Via 3 -->
+                <div class="pedido-container">
+                    <div class="via-titulo">VIA 3 - Arquivo Clínico</div>
+                    <p><strong>Paciente:</strong> <span class="lbl-paciente">Ana Souza</span></p>
+                    <p><strong>Exames:</strong> <span class="lbl-exames">Hemograma, Colesterol Total, Triglicerídeos</span></p>
+                    <p><strong>Data:</strong> 08/06/2026 &nbsp;&nbsp;&nbsp;&nbsp; <strong>Assinatura Médico:</strong> _____________________</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 3: CADASTRAR RESULTADOS -->
+        <div id="cadastro" class="tab-content">
+            <h2>Cadastrar Resultado de Exame</h2>
+            <form id="form-cadastro" onsubmit="salvarExame(event)">
+                <div class="form-group">
+                    <label for="cad-paciente">Nome do Paciente:</label>
+                    <input type="text" id="cad-paciente" required placeholder="Nome completo">
+                </div>
+                <div class="form-group">
+                    <label for="cad-exame">Nome do Exame:</label>
+                    <input type="text" id="cad-exame" required placeholder="Ex: Hemograma">
+                </div>
+                <div class="form-group">
+                    <label for="cad-data">Data do Exame:</label>
+                    <input type="date" id="cad-data" required>
+                </div>
+                <div class="form-group">
+                    <label for="cad-resultado">Laudo / Resultado:</label>
+                    <textarea id="cad-resultado" rows="4" required placeholder="Digite o laudo do exame..."></textarea>
+                </div>
+                <button type="submit" class="btn">Salvar e Enviar para o Relatório</button>
+            </form>
+        </div>
+
+    </div>
+
+    <script>
+        // Função para alternar abas
+        function mudarAba(evt, abaId) {
+            const conteudos = document.querySelectorAll('.tab-content');
+            conteudos.forEach(c => c.classList.remove('active'));
+
+            const botoes = document.querySelectorAll('nav button');
+            botoes.forEach(b => b.classList.remove('active'));
+
+            document.getElementById(abaId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Sincronizar texto do pedido de exames dinamicamente
+        document.getElementById('ped-paciente').addEventListener('input', function() {
+            document.querySelectorAll('.lbl-paciente').forEach(el => el.textContent = this.value);
+        });
+        document.getElementById('ped-exames').addEventListener('input', function() {
+            document.querySelectorAll('.lbl-exames').forEach(el => el.textContent = this.value);
+        });
+
+        // Função para cadastrar novos resultados e mandar para a tabela do relatório
+        function salvarExame(event) {
+            event.preventDefault();
+
+            const paciente = document.getElementById('cad-paciente').value;
+            const exame = document.getElementById('cad-exame').value;
+            const data = document.getElementById('cad-data').value;
+            const resultado = document.getElementById('cad-resultado').value;
+
+            let dataFormatada = data;
+            if(data.includes('-')) {
+                const partes = data.split('-');
+                dataFormatada = `${partes[2]}/${partes[1]}/${partes[0]}`;
+            }
+
+            const tabela = document.getElementById('tabela-relatorio');
+            const novaLinha = document.createElement('tr');
+
+            novaLinha.innerHTML = `
+                <td>${paciente}</td>
+                <td>${exame}</td>
+                <td>${dataFormatada}</td>
+                <td><span class="status-concluido">Concluído</span></td>
+                <td>${resultado}</td>
+            `;
+
+            tabela.appendChild(novaLinha);
+
+            alert('Exame cadastrado com sucesso!');
+            document.getElementById('form-cadastro').reset();
+            
+            // Redireciona para a aba de relatório para ver o resultado cadastrado
+            document.querySelector('nav button').click();
+        }
+    </script>
+</body>
+</html>
